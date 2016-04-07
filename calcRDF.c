@@ -57,8 +57,8 @@ void basicRDF(int na, int* aser, int nb, int* bser, int ntot, double* coord, dou
                     for(nz = -MZ; nz < MZ+1; nz++)
                     {
                         tmpVec2[0] = tmpVec1[0] + nx*latt[0] + ny*latt[1] + nz*latt[2];  
-                        tmpVec2[0] = tmpVec1[0] + nx*latt[3] + ny*latt[4] + nz*latt[5];
-                        tmpVec2[0] = tmpVec1[0] + nx*latt[6] + ny*latt[7] + nz*latt[8];
+                        tmpVec2[1] = tmpVec1[1] + nx*latt[3] + ny*latt[4] + nz*latt[5];
+                        tmpVec2[2] = tmpVec1[2] + nx*latt[6] + ny*latt[7] + nz*latt[8];
                         d1 = sqrt(sqdist(tmpVec2));
                         if(d1 < nbins*binsize)
                         {
