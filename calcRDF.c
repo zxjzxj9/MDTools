@@ -30,7 +30,7 @@
 #define MGRID MX*MY*MZ
 #define PI 3.1415926
 
-void basicRDF(int na, int* aser, int nb, int* bser, int ntot, double* coord, double* latt,int nbins, int binsize, double *RDF)
+void basicRDF(int na, int* aser, int nb, int* bser, int ntot, double* coord, double* latt, int nbins, double binsize, double *RDF)
 {
     int i,j;
     int nx,ny,nz; // maybe slower
