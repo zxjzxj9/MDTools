@@ -2,7 +2,7 @@
 // Aimed at shared library called by C
 // By zxj, 2016/4/7
 // g_ab = \frac{n_ab(r)}{4*\pi*r^2dr\rho_a}
-// Where rho_a = V/(N*c_a)
+// Where \rho_a = V/(N*c_a)
 
 // na: number of atom a 
 // aser: atom serial number of a
@@ -41,7 +41,6 @@ void basicRDF(int na, int* aser, int nb, int* bser, int ntot, double* coord, dou
 
     memset((void*) RDF, 0, nbins*sizeof(double)); // clear the RDF data
 
-    
     for(i = 0; i < na; i++)
     {
         for(j = 0; j < nb; j++)
