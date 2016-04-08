@@ -5,7 +5,9 @@
 
 # class to parse *.arc trajectory
 import numpy as np
-from math import sin,cos,pi
+import matplotlib.pyplot as plt
+import ctypes
+from math import sin,cos,pi,sqrt
 
 class TrajReader:
     def __init__(self,fn):
@@ -26,7 +28,7 @@ class TrajReader:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         strinfo = StrObj(self.na)
         strinfo.note = self.fh.readline()
         self.fh.readline()
@@ -65,8 +67,9 @@ class StrObj:
             # print line
             tmp = line.split()
             self.elem.append(tmp[0])
-            self.coord.append(map(lambda x:float(x),tmp[1:4]))
-        self.lattice = self.lattvec(map(lambda x:float(x),self.cell.split()[1:7]))
+            self.coord.append(list(map(lambda x:float(x),tmp[1:4])))
+        #print(self.cell.split()[1:7])
+        self.lattice = self.lattvec(list(map(lambda x:float(x),self.cell.split()[1:7])))
 
     def lattvec(self,abc):
         a = abc[0]
@@ -88,5 +91,48 @@ class StrObj:
 # Main program
 
 if __name__ == "__main__":
-    pass
+
+    shlib = ctypes.cdll.LoadLibrary("./calcRDF.so")
+    func = shlib.basicRDF
+
+    ntot = 9
+    na = 9
+    nb = 9
+    aser = range(9)
+    bser = range(9)
+
+    cntot = ctypes.c_int(ntot)
+    cna = ctypes.c_int(na)
+    cnb = ctypes.c_int(nb)
+    caser = (ctypes.c_int*na)(*aser)
+    cbser = (ctypes.c_int*nb)(*bser)
+
+    nbins = 400
+    
+    cnbins = ctypes.c_int(nbins)
+    cbinsize = ctypes.c_double(0.05)
+    RDF = np.zeros(nbins)
+    cRDF = (ctypes.c_double*nbins)(0)
+
+    cnt = 0
+    for data in TrajReader("data1.arc"):
+        cnt += 1
+        ccoord = (ctypes.c_double*(3*ntot))(*(np.array(data.coord).flatten(order='C').tolist()))
+        clatt = (ctypes.c_double*(9))(*(np.array(data.lattice).flatten(order='C').tolist()))
+        func(cna,caser,cnb,cbser,cntot,ccoord,clatt,cnbins,cbinsize,cRDF)
+        RDF += np.array(cRDF)
+
+    RDF = RDF/cnt
+
+    Xdata = np.arange(len(RDF))*0.05
+    plt.plot(Xdata,RDF)
+    plt.show()
+   
+    acc = 0.0
+    for _x,_y in zip(Xdata,RDF):
+        if _x < 3.54:
+            acc += _y
+
+    acc = acc*0.05
+    print("Average coordination number: %12.6f" %acc)
 

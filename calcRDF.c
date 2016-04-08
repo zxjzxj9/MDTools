@@ -24,9 +24,9 @@
 #include <string.h>
 #define sqdist(vec) (vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2])
 #define sq(num) (num*num)
-#define MX 1
-#define MY 1
-#define MZ 1
+#define MX 3
+#define MY 3
+#define MZ 3
 #define MGRID MX*MY*MZ
 #define PI 3.1415926
 
@@ -37,7 +37,7 @@ void basicRDF(int na, int* aser, int nb, int* bser, int ntot, double* coord, dou
     double vol = latt[0] * latt[4] * latt[8];
     double tmpVec1[3], tmpVec2[3];
     double d1;
-    double dens = vol/na;
+    double dens = na/vol;
 
     memset((void*) RDF, 0, nbins*sizeof(double)); // clear the RDF data
 
@@ -59,9 +59,9 @@ void basicRDF(int na, int* aser, int nb, int* bser, int ntot, double* coord, dou
                         tmpVec2[1] = tmpVec1[1] + nx*latt[3] + ny*latt[4] + nz*latt[5];
                         tmpVec2[2] = tmpVec1[2] + nx*latt[6] + ny*latt[7] + nz*latt[8];
                         d1 = sqrt(sqdist(tmpVec2));
-                        if(d1 < nbins*binsize)
+                        if(d1 < nbins*binsize && d1 > 0.1) // avoid duplicate
                         {
-                           RDF[(int) floor(d1/binsize)] += 1.00/(4*PI*sq(d1)*binsize*dens);
+                           RDF[(int) floor(d1/binsize)] += 1.00/(4*PI*sq(d1)*binsize*dens*na);
                         }
                     }
                 }
